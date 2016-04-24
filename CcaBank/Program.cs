@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CcaBank
 {
@@ -21,12 +17,16 @@ namespace CcaBank
             int nextOperation = 0;
 
             Console.WriteLine("Bienvenue a CCA BANK");
-
-            while (true)
+            bool exit = false;
+            while (!exit)
             {
                 // authentication
                 Console.Write("Votre Numero de Compte : ");
                 string tempAccountNumber = Console.ReadLine();
+                if (tempAccountNumber == "0" || tempAccountNumber == "exit")
+                {
+                    break;
+                }
                 int currentAccountNumber = Convert.ToInt32(tempAccountNumber);
 
                 int currentAccount = -1;
@@ -45,10 +45,16 @@ namespace CcaBank
                     continue;
                 }
 
-                while (true)
+                while (!exit)
                 {
                     Console.Write("Votre Code PIN : ");
                     string tempPin = Console.ReadLine();
+                    if (tempPin == "0" || tempPin == "exit")
+                    {
+                        exit = true;
+                        break;
+                    }
+
                     int currentPin = Convert.ToInt32(tempPin);
                     if (tabAccounts[currentAccount].Pin != currentPin)
                     {
@@ -58,11 +64,98 @@ namespace CcaBank
                     break;
                 }
                 
-                // menu
+                // operations
+                while (!exit)
+                {
+                    // menu
+                    Console.WriteLine("Operations disponible :");
+                    Console.WriteLine("0- Sortie");
+                    Console.WriteLine("1- Retrait");
+                    Console.WriteLine("2- Depot");
+                    Console.WriteLine("3- Solde de compte");
+                    Console.Write("Veuillez saisir le numero de l'operation a effectuer: ");
 
+                    string tempOperation = Console.ReadLine();
+                    switch (tempOperation)
+                    {
+                        // exit
+                        case "0":
+                            exit = true;
+                            break;
+                        
+                        case "exit":
+                            exit = true;
+                            break;
+
+                        // retrait
+                        case "1":
+                            while (true)
+                            {
+                                Console.Write("Montant a retirer : ");
+                                string tempAmount = Console.ReadLine();
+                                if (tempAmount == "0" || tempAmount == "exit")
+                                {
+                                    exit = true;
+                                    break;
+                                }
+
+                                int amount = Convert.ToInt32(tempAmount);
+                                if (amount <= 0)
+                                {
+                                    Console.WriteLine("Le montant a retirer doit etre superieur a 0");
+                                    continue;
+                                }
+                                if (amount > tabAccounts[currentAccount].Balance)
+                                {
+                                    Console.WriteLine("Solde insuffisant : " + tabAccounts[currentAccount].Balance);
+                                    continue;
+                                }
+                                tabAccounts[currentAccount].Balance -= amount;
+                                Console.WriteLine("Retrait complete");
+                                break;
+                            }                            
+                            break;
+                        
+                        // depot
+                        case "2":
+                            while (true)
+                            {
+                                Console.Write("Montant a depositer : ");
+                                string tempAmount = Console.ReadLine();
+                                if (tempAmount == "0" || tempAmount == "exit")
+                                {
+                                    exit = true;
+                                    break;
+                                }
+
+                                int amount = Convert.ToInt32(tempAmount);
+                                if (amount <= 0)
+                                {
+                                    Console.WriteLine("Le montant a deposer doit etre superieur a 0");
+                                    continue;
+                                }
+
+                                tabAccounts[currentAccount].Balance += amount;
+                                Console.WriteLine("Depot complete");
+                                break;
+                            }                            
+                            break;
+
+                        // solde
+                        case "3":
+                            Console.WriteLine("Votres solde : " + tabAccounts[currentAccount].Balance);
+                            break;
+
+                        // autre
+                        default:
+                            Console.WriteLine("Operation invalide");
+                            break;
+                    }
+                }
             }
-            
 
+            Console.WriteLine("Merci d'avoir utilise CCA BANK");
+            Console.ReadKey();
         }
     }
 
