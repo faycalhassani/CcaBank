@@ -44,7 +44,7 @@ namespace CcaBank
             Console.ReadKey();
         }
 
-        private static bool RunOperations(Account[] tabAccounts, int currentAccount, bool exit)
+        static bool RunOperations(Account[] tabAccounts, int currentAccount, bool exit)
         {
             string tempOperation = Console.ReadLine();
             switch (tempOperation)
@@ -102,7 +102,7 @@ namespace CcaBank
             }
         }
 
-        private static int GetAccount(Account[] tabAccounts, int nextAccount)
+        static int GetAccount(Account[] tabAccounts, int nextAccount)
         {
             while (true)
             {
