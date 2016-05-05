@@ -27,15 +27,15 @@ namespace CcaBank
             {
                 // obtenir le numero de compte de l'utilisateur
                 // si Getaccount renvoie -1 => sortir
-                int currentAccount = GetAccount(tabAccounts, nextAccount);
-                if (currentAccount == -1)
+                Account currentAccount = GetAccount(tabAccounts, nextAccount);
+                if (currentAccount == null)
                 {
                     break;
                 }
 
                 // apres avoir trouve le numero de compte valide, obtenir le code pin de l'utilisateur pour ce compte
                 // si Authenticate renvoie 'false' => sortir
-                if (!Authenticate(tabAccounts, currentAccount))
+                if (!Authenticate(currentAccount))
                 {
                     break;
                 }
@@ -51,7 +51,7 @@ namespace CcaBank
 
                     // effectuer l'operation selectionnee par l'utilisateur
                     // si exit = true, sortir
-                    exit = RunOperations(tabAccounts, currentAccount, exit);
+                    exit = RunOperations(currentAccount, exit);
                 }
             }
 
@@ -82,7 +82,7 @@ namespace CcaBank
         /// <param name="tabAccounts"></param>
         /// <param name="nextAccount"></param>
         /// <returns></returns>
-        static int GetAccount(Account[] tabAccounts, int nextAccount)
+        static Account GetAccount(Account[] tabAccounts, int nextAccount)
         {
             // tant que le numero de compte n'est pas valide et l'utilisateur n'a pas demande de sortir, la boucle doit continuer a tourner
             while (true)
@@ -93,24 +93,24 @@ namespace CcaBank
                 // l'utilisateur peut demander a tout momemnt de sortir de l'application en saisissant 0 ou exit
                 if (tempAccountNumber == "0" || tempAccountNumber == "exit")
                 {
-                    return -1;
+                    return null;
                 }
                 // convertir le numero de compte de string a int
                 int currentAccountNumber = Convert.ToInt32(tempAccountNumber);
 
-                int currentAccount = -1;
+                Account currentAccount = null;
                 // parcourir le tableau pour trouver le numero de compte
                 for (int i = 0; i < nextAccount; i++)
                 {
                     if (tabAccounts[i].Number == currentAccountNumber)
                     {
-                        currentAccount = i;
+                        currentAccount = tabAccounts[i];
                         break;
                     }
                 }
 
                 // si le compte n'existe pas dans le tableau => afficher message d'erreur et recommencer la boucle pour demander encore le numero de compte
-                if (currentAccount == -1)
+                if (currentAccount == null)
                 {
                     Console.WriteLine("Compte introuvable!");
                     continue;
@@ -125,7 +125,7 @@ namespace CcaBank
         /// <param name="tabAccounts"></param>
         /// <param name="currentAccount"></param>
         /// <returns></returns>
-        static bool Authenticate(Account[] tabAccounts, int currentAccount)
+        static bool Authenticate(Account currentAccount)
         {
             // tant que le code pin n'est pas valide et l'utilisateur n'a pas demande de sortir, la boucle doit continuer a tourner
             while (true)
@@ -142,7 +142,7 @@ namespace CcaBank
                 // convertir le code pin de string a int
                 int currentPin = Convert.ToInt32(tempPin);
                 // si le code pin n'est pas le meme que celui du compte => recommencer la boucle pour demander encore le code pin
-                if (tabAccounts[currentAccount].Pin != currentPin)
+                if (currentAccount.Pin != currentPin)
                 {
                     Console.WriteLine("Code PIN Invalide");
                     continue;
@@ -171,7 +171,7 @@ namespace CcaBank
         /// <param name="currentAccount"></param>
         /// <param name="exit"></param>
         /// <returns></returns>
-        static bool RunOperations(Account[] tabAccounts, int currentAccount, bool exit)
+        static bool RunOperations(Account currentAccount, bool exit)
         {
             string tempOperation = Console.ReadLine();
             switch (tempOperation)
@@ -187,17 +187,17 @@ namespace CcaBank
 
                 // retrait
                 case "1":
-                    exit = Retrait(tabAccounts, currentAccount, exit);
+                    exit = Retrait(currentAccount, exit);
                     break;
 
                 // depot
                 case "2":
-                    exit = Depot(tabAccounts, currentAccount, exit);
+                    exit = Depot(currentAccount, exit);
                     break;
 
                 // solde
                 case "3":
-                    Console.WriteLine("Votres solde : " + tabAccounts[currentAccount].Balance);
+                    Console.WriteLine("Votres solde : " + currentAccount.Balance);
                     break;
 
                 // autre
@@ -215,7 +215,7 @@ namespace CcaBank
         /// <param name="currentAccount"></param>
         /// <param name="exit"></param>
         /// <returns></returns>
-        static bool Retrait(Account[] tabAccounts, int currentAccount, bool exit)
+        static bool Retrait(Account currentAccount, bool exit)
         {
             // tant que le retrait n'est pas reussi et l'utilisateur n'a pas demande de sortir, la boucle doit continuer a tourner
             while (true)
@@ -234,14 +234,14 @@ namespace CcaBank
                 int amount = Convert.ToInt32(tempAmount);
 
                 // effectuer le retrait avec l'objet Account
-                if(!tabAccounts[currentAccount].Retrait(amount))
+                if(!currentAccount.Retrait(amount))
                 {
-                    Console.WriteLine("Le montant a retirer doit etre superieur a 0 et inferiuer a votre solde : " + tabAccounts[currentAccount].Balance);
+                    Console.WriteLine("Le montant a retirer doit etre superieur a 0 et inferiuer a votre solde : " + currentAccount.Balance);
                     continue;
                 }
                 
                 Console.WriteLine("Retrait complete");
-                Console.WriteLine("Nouveau solde : " + tabAccounts[currentAccount].Balance);
+                Console.WriteLine("Nouveau solde : " + currentAccount.Balance);
                 break;
             }
             return exit;
@@ -254,7 +254,7 @@ namespace CcaBank
         /// <param name="currentAccount"></param>
         /// <param name="exit"></param>
         /// <returns></returns>
-        static bool Depot(Account[] tabAccounts, int currentAccount, bool exit)
+        static bool Depot(Account currentAccount, bool exit)
         {
             // tant que le depot n'est pas reussi et l'utilisateur n'a pas demande de sortir, la boucle doit continuer a tourner
             while (true)
@@ -272,19 +272,17 @@ namespace CcaBank
                 // convertir le montant a deposer de string a int
                 int amount = Convert.ToInt32(tempAmount);
                 // effectuer le depot avec l'objet Account
-                if (!tabAccounts[currentAccount].Depot(amount))
+                if (!currentAccount.Depot(amount))
                 {
                     Console.WriteLine("Le montant a deposer doit etre superieur a 0");
                     continue;
                 }
                 
                 Console.WriteLine("Depot complete");
-                Console.WriteLine("Nouveau solde : " + tabAccounts[currentAccount].Balance);
+                Console.WriteLine("Nouveau solde : " + currentAccount.Balance);
                 break;
             }
             return exit;
         }
-
-        
     }
 }
