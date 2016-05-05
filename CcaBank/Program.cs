@@ -6,16 +6,17 @@ namespace CcaBank
     {
         static void Main(string[] args)
         {
+            Start();
+            Console.ReadKey();
+        }
+
+        static void Start()
+        {
             // initialiser les structure de donnees et les donnees
             // initialiser un tableau pour la liste des comptes
             // nextAccount sera utilisee pour identifier la position ou il faudra rajouter le prochain compte dans le tableau
             Account[] tabAccounts = new Account[10];
             int nextAccount = InitializeAccounts(tabAccounts);
-
-            // initialiser un tableau pour la liste des operations
-            // nextOperation sera utilisee pour identifier la position ou il faudra rajouter la prochaine operation dans le tableau
-            Operation[] tabOperations = new Operation[100];
-            int nextOperation = InitializeOperations(tabOperations);
 
             Console.WriteLine("Bienvenue a CCA BANK");
             // exit sera utilisee pour savoir si l'utilisateur a demande de sortir de l'applicaton
@@ -35,9 +36,9 @@ namespace CcaBank
                 // apres avoir trouve le numero de compte valide, obtenir le code pin de l'utilisateur pour ce compte
                 // si Authenticate renvoie 'false' => sortir
                 if (!Authenticate(tabAccounts, currentAccount))
-	            {
+                {
                     break;
-	            }
+                }
 
                 // apres avoir authentifie l'utilisateur avec un numero de compte valid et un code pin : 
                 // l'utilisateur doit etre capable d'effectuer plusieurs operation
@@ -50,19 +51,18 @@ namespace CcaBank
 
                     // effectuer l'operation selectionnee par l'utilisateur
                     // si exit = true, sortir
-                    exit = RunOperations(tabAccounts, currentAccount, tabOperations, ref nextOperation, exit);
+                    exit = RunOperations(tabAccounts, currentAccount, exit);
                 }
             }
 
             Console.WriteLine("Merci d'avoir utilise CCA BANK");
-            Console.ReadKey();
         }
 
         /// <summary>
         /// Initialiser une liste de comptes, et renvoyer le nombre de compte dans la liste
         /// </summary>
-        /// <param name="tabAccounts"></param>
-        /// <returns></returns>
+        /// <param name="tabAccounts">Liste de comptes vide</param>
+        /// <returns>Le nombre de compte initialise dans la liste</returns>
         static int InitializeAccounts(Account[] tabAccounts)
         {
             Account acc0 = new Account();
@@ -74,16 +74,6 @@ namespace CcaBank
             tabAccounts[1] = new Account { Number = 200, Pin = 2345, ClientName = "Jon Machin" };
             tabAccounts[2] = new Account { Number = 300, Pin = 3456, ClientName = "Forest Moi" };
             return 3;
-        }
-
-        /// <summary>
-        /// Initialiser une liste d'operation et rnvoyer le nombre d'operations dans liste
-        /// </summary>
-        /// <param name="tabOperations"></param>
-        /// <returns></returns>
-        static int InitializeOperations(Operation[] tabOperations)
-        {
-            return 0;
         }
 
         /// <summary>
@@ -179,11 +169,9 @@ namespace CcaBank
         /// </summary>
         /// <param name="tabAccounts"></param>
         /// <param name="currentAccount"></param>
-        /// <param name="tabOperations"></param>
-        /// <param name="nextOperation"></param>
         /// <param name="exit"></param>
         /// <returns></returns>
-        static bool RunOperations(Account[] tabAccounts, int currentAccount, Operation[] tabOperations, ref int nextOperation, bool exit)
+        static bool RunOperations(Account[] tabAccounts, int currentAccount, bool exit)
         {
             string tempOperation = Console.ReadLine();
             switch (tempOperation)
@@ -199,12 +187,12 @@ namespace CcaBank
 
                 // retrait
                 case "1":
-                    exit = Retrait(tabAccounts, currentAccount, tabOperations, ref nextOperation, exit);
+                    exit = Retrait(tabAccounts, currentAccount, exit);
                     break;
 
                 // depot
                 case "2":
-                    exit = Depot(tabAccounts, currentAccount, tabOperations, ref nextOperation, exit);
+                    exit = Depot(tabAccounts, currentAccount, exit);
                     break;
 
                 // solde
@@ -225,11 +213,9 @@ namespace CcaBank
         /// </summary>
         /// <param name="tabAccounts"></param>
         /// <param name="currentAccount"></param>
-        /// <param name="tabOperations"></param>
-        /// <param name="nextOperation"></param>
         /// <param name="exit"></param>
         /// <returns></returns>
-        static bool Retrait(Account[] tabAccounts, int currentAccount, Operation[] tabOperations, ref int nextOperation, bool exit)
+        static bool Retrait(Account[] tabAccounts, int currentAccount, bool exit)
         {
             // tant que le retrait n'est pas reussi et l'utilisateur n'a pas demande de sortir, la boucle doit continuer a tourner
             while (true)
@@ -250,12 +236,10 @@ namespace CcaBank
                 // effectuer le retrait avec l'objet Account
                 if(!tabAccounts[currentAccount].Retrait(amount))
                 {
-                        Console.WriteLine("Le montant a retirer doit etre superieur a 0 et inferiuer a votre solde : " + tabAccounts[currentAccount].Balance);
-                        continue;
+                    Console.WriteLine("Le montant a retirer doit etre superieur a 0 et inferiuer a votre solde : " + tabAccounts[currentAccount].Balance);
+                    continue;
                 }
-
-                // ajouter le retrait a la lists des operations
-                LogOperation(tabOperations, tabAccounts[currentAccount].Number, -amount, ref nextOperation);
+                
                 Console.WriteLine("Retrait complete");
                 Console.WriteLine("Nouveau solde : " + tabAccounts[currentAccount].Balance);
                 break;
@@ -268,11 +252,9 @@ namespace CcaBank
         /// </summary>
         /// <param name="tabAccounts"></param>
         /// <param name="currentAccount"></param>
-        /// <param name="tabOperations"></param>
-        /// <param name="nextOperation"></param>
         /// <param name="exit"></param>
         /// <returns></returns>
-        static bool Depot(Account[] tabAccounts, int currentAccount, Operation[] tabOperations, ref int nextOperation, bool exit)
+        static bool Depot(Account[] tabAccounts, int currentAccount, bool exit)
         {
             // tant que le depot n'est pas reussi et l'utilisateur n'a pas demande de sortir, la boucle doit continuer a tourner
             while (true)
@@ -295,9 +277,7 @@ namespace CcaBank
                     Console.WriteLine("Le montant a deposer doit etre superieur a 0");
                     continue;
                 }
-
-                // ajouter le retrait a la lists des operations
-                LogOperation(tabOperations, tabAccounts[currentAccount].Number, amount, ref nextOperation);
+                
                 Console.WriteLine("Depot complete");
                 Console.WriteLine("Nouveau solde : " + tabAccounts[currentAccount].Balance);
                 break;
@@ -305,25 +285,6 @@ namespace CcaBank
             return exit;
         }
 
-        /// <summary>
-        /// Ajouter une operation a la liste des peration et renvoyer le nombre d'operation dans la liste
-        /// </summary>
-        /// <param name="tabOperations"></param>
-        /// <param name="accountNumber"></param>
-        /// <param name="amount"></param>
-        /// <param name="nextOperation"></param>
-        static void LogOperation(Operation[] tabOperations, int accountNumber, int amount, ref int nextOperation)
-        {
-            tabOperations[nextOperation] = new Operation { AccountNumer = accountNumber, Number = nextOperation, Amount = amount, Date = DateTime.Now };
-            nextOperation++;
-        }
-    }
-
-    struct Operation
-    {
-        public int Number;
-        public int AccountNumer;
-        public int Amount;
-        public DateTime Date;
+        
     }
 }
