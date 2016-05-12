@@ -1,5 +1,5 @@
-﻿
-using System;
+﻿using System;
+
 namespace CcaBank
 {
     /// <summary>
@@ -8,24 +8,43 @@ namespace CcaBank
     class Account
     {
         public int Number { get; set; }
-        public int Pin { get; set; }
-        public int Balance { get; private set; }
+        public int Pin { get; set; }        
         public string ClientName { get; set; }
+        protected int Balance;
 
         /// <summary>
         /// Liste des operations pour ce compte
         /// </summary>
-        public Operation[] Operations { get; set; }
+        public Operation[] Operations { get; private set; }
         private int _nextOperation;
 
         /// <summary>
         /// Constructeur de la class Account. 
         /// Il sert a initialiser des valeurs au moment de la createion d'un comte
         /// </summary>
-        public Account()
+        public Account() : this(20)
         {
-            Operations = new Operation[20];
+        }
+
+        public Account(int maxOperations)
+        {
+            Operations = new Operation[maxOperations];
             _nextOperation = 0;
+        }
+
+        public Account(int initialBalance, int maxOps) : this(maxOps)
+        {
+            Balance = initialBalance;
+        }
+
+        /// <summary>
+        /// Obtenir le solde du compte
+        /// virtual = le comportement de cette fonction peut etre ecrase dans une sous-classe
+        /// </summary>
+        /// <returns></returns>
+        public virtual int GetBalance()
+        {
+            return Balance;
         }
 
         /// <summary>
@@ -43,6 +62,13 @@ namespace CcaBank
             Balance += amount;
             // ajouter le retrait a la lists des operations
             LogOperation(amount);
+            return true;
+        }
+
+        public bool Depot(int amount, DateTime date)
+        {
+            Depot(amount);
+            // faire que;que chose avec la date
             return true;
         }
 

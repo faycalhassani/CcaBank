@@ -65,13 +65,13 @@ namespace CcaBank
         /// <returns>Le nombre de compte initialise dans la liste</returns>
         static int InitializeAccounts(Account[] tabAccounts)
         {
-            Account acc0 = new Account();
+            SavingAccount acc0 = new SavingAccount(0.1);
             acc0.Number = 100;
             acc0.Pin = 1234;
             acc0.ClientName = "George Cloony";
-
+            
             tabAccounts[0] = acc0;
-            tabAccounts[1] = new Account { Number = 200, Pin = 2345, ClientName = "Jon Machin" };
+            tabAccounts[1] = new Account(1000, 30) { Number = 200, Pin = 2345, ClientName = "Jon Machin" };
             tabAccounts[2] = new Account { Number = 300, Pin = 3456, ClientName = "Forest Moi" };
             return 3;
         }
@@ -197,7 +197,7 @@ namespace CcaBank
 
                 // solde
                 case "3":
-                    Console.WriteLine("Votres solde : " + currentAccount.Balance);
+                    Console.WriteLine("Votres solde : " + currentAccount.GetBalance());
                     break;
 
                 // autre
@@ -236,12 +236,12 @@ namespace CcaBank
                 // effectuer le retrait avec l'objet Account
                 if(!currentAccount.Retrait(amount))
                 {
-                    Console.WriteLine("Le montant a retirer doit etre superieur a 0 et inferiuer a votre solde : " + currentAccount.Balance);
+                    Console.WriteLine("Le montant a retirer doit etre superieur a 0 et inferiuer a votre solde : " + currentAccount.GetBalance());
                     continue;
                 }
                 
                 Console.WriteLine("Retrait complete");
-                Console.WriteLine("Nouveau solde : " + currentAccount.Balance);
+                Console.WriteLine("Nouveau solde : " + currentAccount.GetBalance());
                 break;
             }
             return exit;
@@ -260,7 +260,7 @@ namespace CcaBank
             while (true)
             {
                 // obtenir le montant a deposer
-                Console.Write("Montant a depositer : ");
+                Console.Write("Montant a deposer : ");
                 string tempAmount = Console.ReadLine();
                 // l'utilisateur peut demander a tout momemnt de sortir de l'application en saisissant 0 ou exit
                 if (tempAmount == "0" || tempAmount == "exit")
@@ -279,7 +279,7 @@ namespace CcaBank
                 }
                 
                 Console.WriteLine("Depot complete");
-                Console.WriteLine("Nouveau solde : " + currentAccount.Balance);
+                Console.WriteLine("Nouveau solde : " + currentAccount.GetBalance());
                 break;
             }
             return exit;
