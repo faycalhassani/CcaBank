@@ -7,6 +7,7 @@ namespace CcaBank
     /// </summary>
     abstract class Account
     {
+        public static string BankCode { get; set; }
         public int Number { get; set; }
         public int Pin { get; set; }        
         public string ClientName { get; set; }

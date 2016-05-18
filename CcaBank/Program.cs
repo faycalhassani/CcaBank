@@ -12,6 +12,9 @@ namespace CcaBank
 
         static void Start()
         {
+            // initialiser le code de la banque
+            Account.BankCode = "003";
+
             // initialiser les structure de donnees et les donnees
             // initialiser un tableau pour la liste des comptes
             // nextAccount sera utilisee pour identifier la position ou il faudra rajouter le prochain compte dans le tableau
