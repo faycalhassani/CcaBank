@@ -71,8 +71,8 @@ namespace CcaBank
             acc0.ClientName = "George Cloony";
             
             tabAccounts[0] = acc0;
-            tabAccounts[1] = new Account(1000, 30) { Number = 200, Pin = 2345, ClientName = "Jon Machin" };
-            tabAccounts[2] = new Account { Number = 300, Pin = 3456, ClientName = "Forest Moi" };
+            tabAccounts[1] = new ChequingAccount() { Number = 200, Pin = 2345, ClientName = "Jon Machin" };
+            tabAccounts[2] = new SavingAccount(0.09) { Number = 300, Pin = 3456, ClientName = "Forest Moi" };
             return 3;
         }
 
@@ -160,7 +160,8 @@ namespace CcaBank
             Console.WriteLine("0- Sortie");
             Console.WriteLine("1- Retrait");
             Console.WriteLine("2- Depot");
-            Console.WriteLine("3- Solde de compte");
+            Console.WriteLine("3- Payment de facture");
+            Console.WriteLine("4- Solde de compte");
             Console.Write("Veuillez saisir le numero de l'operation a effectuer: ");
         }
 
@@ -195,8 +196,13 @@ namespace CcaBank
                     exit = Depot(currentAccount, exit);
                     break;
 
-                // solde
+                // payment
                 case "3":
+                    exit = Paiment(currentAccount, exit);
+                    break;
+
+                // solde
+                case "4":
                     Console.WriteLine("Votres solde : " + currentAccount.GetBalance());
                     break;
 
@@ -204,6 +210,55 @@ namespace CcaBank
                 default:
                     Console.WriteLine("Operation invalide");
                     break;
+            }
+            return exit;
+        }
+
+        static bool Paiment(Account currentAccount, bool exit)
+        {
+            // tant que le retrait n'est pas reussi et l'utilisateur n'a pas demande de sortir, la boucle doit continuer a tourner
+            while (true)
+            {
+
+                // obtenir le montant a retrer
+                Console.Write("Selectinnez la partie a payer : ");
+                Console.Write("1- Hydro-Quebec");
+                Console.Write("2- Bell Canada");
+                Console.Write("3- Gouvernement Du Quebec");
+                string tempParty = Console.ReadLine();
+                // l'utilisateur peut demander a tout momemnt de sortir de l'application en saisissant 0 ou exit
+                if (tempParty == "0" || tempParty == "exit")
+                {
+                    exit = true;
+                    break;
+                }
+
+                // convertr le montant de string a int
+                int party = Convert.ToInt32(tempParty);
+
+                // obtenir le montant a retrer
+                Console.Write("Montant du paiment : ");
+                string tempAmount = Console.ReadLine();
+                // l'utilisateur peut demander a tout momemnt de sortir de l'application en saisissant 0 ou exit
+                if (tempAmount == "0" || tempAmount == "exit")
+                {
+                    exit = true;
+                    break;
+                }
+
+                // convertr le montant de string a int
+                int amount = Convert.ToInt32(tempAmount);
+
+                // effectuer le retrait avec l'objet Account
+                if (!currentAccount.Paiment(amount, party))
+                {
+                    Console.WriteLine("Le montant a retirer doit etre superieur a 0 et inferiuer a votre solde : " + currentAccount.GetBalance());
+                    continue;
+                }
+
+                Console.WriteLine("Retrait complete");
+                Console.WriteLine("Nouveau solde : " + currentAccount.GetBalance());
+                break;
             }
             return exit;
         }

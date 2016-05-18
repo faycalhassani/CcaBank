@@ -5,7 +5,7 @@ namespace CcaBank
     /// <summary>
     /// Represente un compte bancaire
     /// </summary>
-    class Account
+    abstract class Account
     {
         public int Number { get; set; }
         public int Pin { get; set; }        
@@ -42,10 +42,7 @@ namespace CcaBank
         /// virtual = le comportement de cette fonction peut etre ecrase dans une sous-classe
         /// </summary>
         /// <returns></returns>
-        public virtual int GetBalance()
-        {
-            return Balance;
-        }
+        public abstract int GetBalance();
 
         /// <summary>
         /// Operation pour effectuer un depot dans le compte
@@ -100,6 +97,25 @@ namespace CcaBank
         {
             Operations[_nextOperation] = new Operation { AccountNumber = Number, Number = _nextOperation, Amount = amount, Date = DateTime.Now };
             _nextOperation++;
+        }
+
+        public bool Paiment(int amount, int party)
+        {
+            IPaymentSystem paymentSystem = GetPaymentSystem(party);
+            if (paymentSystem.Pay(amount))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private IPaymentSystem GetPaymentSystem(int party)
+        {
+            switch (party)
+            {
+                case 1: return new WirePaymentSystem(party);
+                default: return new WirePaymentSystem(party);
+            }
         }
     }
 }
