@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace CcaBank
 {
@@ -16,24 +17,19 @@ namespace CcaBank
         /// <summary>
         /// Liste des operations pour ce compte
         /// </summary>
-        public Operation[] Operations { get; private set; }
-        private int _nextOperation;
+        public List<Operation> Operations { get; private set; }
+        protected static int NextOperation = 1;
 
         /// <summary>
         /// Constructeur de la class Account. 
         /// Il sert a initialiser des valeurs au moment de la createion d'un comte
         /// </summary>
-        public Account() : this(20)
+        public Account()
         {
+            Operations = new List<Operation>();
         }
 
-        public Account(int maxOperations)
-        {
-            Operations = new Operation[maxOperations];
-            _nextOperation = 0;
-        }
-
-        public Account(int initialBalance, int maxOps) : this(maxOps)
+        public Account(int initialBalance) : this()
         {
             Balance = initialBalance;
         }
@@ -96,8 +92,8 @@ namespace CcaBank
         /// <param name="nextOperation"></param>
         private void LogOperation(int amount)
         {
-            Operations[_nextOperation] = new Operation { AccountNumber = Number, Number = _nextOperation, Amount = amount, Date = DateTime.Now };
-            _nextOperation++;
+            Operations.Add(new Operation { AccountNumber = Number, Number = NextOperation, Amount = amount, Date = DateTime.Now });
+            NextOperation++;
         }
 
         public bool Paiment(int amount, int party)

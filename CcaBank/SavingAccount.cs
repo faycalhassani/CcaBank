@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace CcaBank
 {
     class SavingAccount : Account
@@ -11,11 +6,6 @@ namespace CcaBank
         public double InterestRate { get; set; }
 
         public SavingAccount(double interestRate)
-        {
-            InterestRate = interestRate;
-        }
-
-        public SavingAccount(double interestRate, int maxOperations) : base(maxOperations)
         {
             InterestRate = interestRate;
         }

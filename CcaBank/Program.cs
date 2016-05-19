@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace CcaBank
 {
@@ -18,8 +19,7 @@ namespace CcaBank
             // initialiser les structure de donnees et les donnees
             // initialiser un tableau pour la liste des comptes
             // nextAccount sera utilisee pour identifier la position ou il faudra rajouter le prochain compte dans le tableau
-            var tabAccounts = new Account[10];
-            var nextAccount = InitializeAccounts(tabAccounts);
+            var accounts = InitializeAccounts();
 
             Console.WriteLine("Bienvenue a CCA BANK");
             // exit sera utilisee pour savoir si l'utilisateur a demande de sortir de l'applicaton
@@ -30,7 +30,7 @@ namespace CcaBank
             {
                 // obtenir le numero de compte de l'utilisateur
                 // si Getaccount renvoie -1 => sortir
-                var currentAccount = GetAccount(tabAccounts, nextAccount);
+                var currentAccount = GetAccount(accounts);
                 if (currentAccount == null)
                 {
                     break;
@@ -66,17 +66,18 @@ namespace CcaBank
         /// </summary>
         /// <param name="tabAccounts">Liste de comptes vide</param>
         /// <returns>Le nombre de compte initialise dans la liste</returns>
-        static int InitializeAccounts(Account[] tabAccounts)
+        static Dictionary<int, Account> InitializeAccounts()
         {
+            var accounts = new Dictionary<int, Account>();
             var acc0 = new SavingAccount(0.1);
             acc0.Number = 100;
             acc0.Pin = 1234;
             acc0.ClientName = "George Cloony";
             
-            tabAccounts[0] = acc0;
-            tabAccounts[1] = new ChequingAccount() { Number = 200, Pin = 2345, ClientName = "Jon Machin" };
-            tabAccounts[2] = new SavingAccount(0.09) { Number = 300, Pin = 3456, ClientName = "Forest Moi" };
-            return 3;
+            accounts.Add(acc0.Number, acc0);
+            accounts.Add(200, new ChequingAccount() { Number = 200, Pin = 2345, ClientName = "Jon Machin" });
+            accounts.Add(300, new SavingAccount(0.09) { Number = 300, Pin = 3456, ClientName = "Forest Moi" });
+            return accounts;
         }
 
         /// <summary>
@@ -85,7 +86,7 @@ namespace CcaBank
         /// <param name="tabAccounts"></param>
         /// <param name="nextAccount"></param>
         /// <returns></returns>
-        static Account GetAccount(Account[] tabAccounts, int nextAccount)
+        static Account GetAccount(Dictionary<int, Account> accounts)
         {
             // tant que le numero de compte n'est pas valide et l'utilisateur n'a pas demande de sortir, la boucle doit continuer a tourner
             while (true)
@@ -101,24 +102,13 @@ namespace CcaBank
                 // convertir le numero de compte de string a int
                 int currentAccountNumber = Convert.ToInt32(tempAccountNumber);
 
-                Account currentAccount = null;
-                // parcourir le tableau pour trouver le numero de compte
-                for (int i = 0; i < nextAccount; i++)
+                if (accounts.ContainsKey(currentAccountNumber))
                 {
-                    if (tabAccounts[i].Number == currentAccountNumber)
-                    {
-                        currentAccount = tabAccounts[i];
-                        break;
-                    }
+                    return accounts[currentAccountNumber];
                 }
 
-                // si le compte n'existe pas dans le tableau => afficher message d'erreur et recommencer la boucle pour demander encore le numero de compte
-                if (currentAccount == null)
-                {
-                    Console.WriteLine("Compte introuvable!");
-                    continue;
-                }
-                return currentAccount;
+                Console.WriteLine("Compte introuvable!");
+                continue;
             }
         }
 
@@ -341,6 +331,44 @@ namespace CcaBank
                 break;
             }
             return exit;
+        }
+
+        static void Collections()
+        {
+            //
+            var list = new List<int>() { 1, 2, 3, 4, 5 };
+            var array = new int[] { 1, 2, 3, 4 };
+
+            var accountsList = new List<Account>() {
+                new SavingAccount(0.1),
+                new ChequingAccount()
+            };
+
+            list.Add(8);
+            accountsList.Add(new ChequingAccount());
+            var acc = new SavingAccount(0.12);
+            accountsList.Add(acc);
+
+            list.AddRange(new int[] { 10, 11, 12 });
+
+            var has2 = list.Contains(2);
+            
+            // 
+            var accounts = new Dictionary<int, Account>()
+            {
+                { 100, new ChequingAccount() },
+                { 300, new SavingAccount(0.13) }
+            };
+
+            accounts.Add(200, new SavingAccount(0.1) { Number = 200 });
+            var currentAccount = accounts[200];
+
+            var dic = new Dictionary<string, string>() 
+            { 
+                { "Key", "Le mot cle a utiliser pour la recherche dans un dictionnaire" },
+                { "Value", "La valeur sauvegarde a l'emplacement designe ar la cle dans le dictionnaire" }
+            };
+
         }
     }
 }
