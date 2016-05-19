@@ -18,8 +18,8 @@ namespace CcaBank
             // initialiser les structure de donnees et les donnees
             // initialiser un tableau pour la liste des comptes
             // nextAccount sera utilisee pour identifier la position ou il faudra rajouter le prochain compte dans le tableau
-            Account[] tabAccounts = new Account[10];
-            int nextAccount = InitializeAccounts(tabAccounts);
+            var tabAccounts = new Account[10];
+            var nextAccount = InitializeAccounts(tabAccounts);
 
             Console.WriteLine("Bienvenue a CCA BANK");
             // exit sera utilisee pour savoir si l'utilisateur a demande de sortir de l'applicaton
@@ -30,7 +30,7 @@ namespace CcaBank
             {
                 // obtenir le numero de compte de l'utilisateur
                 // si Getaccount renvoie -1 => sortir
-                Account currentAccount = GetAccount(tabAccounts, nextAccount);
+                var currentAccount = GetAccount(tabAccounts, nextAccount);
                 if (currentAccount == null)
                 {
                     break;
@@ -68,7 +68,7 @@ namespace CcaBank
         /// <returns>Le nombre de compte initialise dans la liste</returns>
         static int InitializeAccounts(Account[] tabAccounts)
         {
-            SavingAccount acc0 = new SavingAccount(0.1);
+            var acc0 = new SavingAccount(0.1);
             acc0.Number = 100;
             acc0.Pin = 1234;
             acc0.ClientName = "George Cloony";
