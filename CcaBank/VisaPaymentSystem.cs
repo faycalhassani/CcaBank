@@ -1,16 +1,11 @@
 ﻿using CcaBank.Business;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CcaBank
 {
-    class WirePaymentSystem : IPaymentSystem
+    class VisaPaymentSystem : IPaymentSystem
     {
         public int Party { get; set; }
-        public WirePaymentSystem(int party)
+        public VisaPaymentSystem(int party)
         {
             Party = party;
         }

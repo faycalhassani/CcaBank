@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.IO;
+using CcaBank.Business;
 
 namespace CcaBank
 {
@@ -7,7 +10,9 @@ namespace CcaBank
     {
         static void Main(string[] args)
         {
-            Start();
+            Files();
+            //Collections();
+            //Start();
             Console.ReadKey();
         }
 
@@ -243,7 +248,8 @@ namespace CcaBank
                 int amount = Convert.ToInt32(tempAmount);
 
                 // effectuer le retrait avec l'objet Account
-                if (!currentAccount.Paiment(amount, party))
+                var paymentSystem = PaymentSystemFactory.Get(party);
+                if (!currentAccount.Paiment(amount, party, paymentSystem))
                 {
                     Console.WriteLine("Le montant a retirer doit etre superieur a 0 et inferiuer a votre solde : " + currentAccount.GetBalance());
                     continue;
@@ -338,16 +344,7 @@ namespace CcaBank
             //
             var list = new List<int>() { 1, 2, 3, 4, 5 };
             var array = new int[] { 1, 2, 3, 4 };
-
-            var accountsList = new List<Account>() {
-                new SavingAccount(0.1),
-                new ChequingAccount()
-            };
-
             list.Add(8);
-            accountsList.Add(new ChequingAccount());
-            var acc = new SavingAccount(0.12);
-            accountsList.Add(acc);
 
             list.AddRange(new int[] { 10, 11, 12 });
 
@@ -369,6 +366,56 @@ namespace CcaBank
                 { "Value", "La valeur sauvegarde a l'emplacement designe ar la cle dans le dictionnaire" }
             };
 
+            // recherche dans list
+            var accountsList = new List<Account>() {
+                new SavingAccount(0.1){ Number = 100, ClientName = "John Smith" },
+                new ChequingAccount() { Number = 200, ClientName = "Sarah Doe"}
+            };
+
+
+            accountsList.Add(new ChequingAccount() { Number = 300, ClientName = "Bob Ford" });
+            var acc = new SavingAccount(0.12) { Number = 400, ClientName = "Tom Robbins" };
+            accountsList.Add(acc);
+
+            var s1 = accountsList.FindAll(a => a.ClientName.Contains("ob"));
+            foreach (var account in s1)
+            {
+                Console.WriteLine(account.ClientName);
+            }
+
+            accountsList.ForEach(a =>
+            {
+                a.Number = a.Number * 2;
+                Console.WriteLine(a.Number);
+            });
+                     
+
+            Console.WriteLine(accountsList.Exists(a => HasClient(a, "John Smith")));
+
+            Func<int, int, int> f = (int a, int b) => { return a + b; };
+            Console.WriteLine(f(3, 7));
+        }
+
+        private static bool HasClient(Account account, string name)
+        {
+            return account.ClientName == name;
+        }
+
+        static void Files()
+        {
+            var text = "Salut tout le monde";
+            try
+            {
+                File.AppendAllText("Z:/ccabank.txt", text);
+            }
+            catch(DirectoryNotFoundException dnfe)
+            {
+                Console.WriteLine("Chemin introuvable : " + dnfe.Message);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Erreur : " + e.Message);
+            }
         }
     }
 }

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CcaBank
+namespace CcaBank.Business
 {
     /// <summary>
     /// Represente un compte bancaire
     /// </summary>
-    abstract class Account
+    public abstract class Account
     {
         public static string BankCode { get; set; }
         public int Number { get; set; }
@@ -96,23 +96,13 @@ namespace CcaBank
             NextOperation++;
         }
 
-        public bool Paiment(int amount, int party)
+        public bool Paiment(int amount, int party, IPaymentSystem paymentSystem)
         {
-            IPaymentSystem paymentSystem = GetPaymentSystem(party);
             if (paymentSystem.Pay(amount))
             {
                 return true;
             }
             return false;
-        }
-
-        private IPaymentSystem GetPaymentSystem(int party)
-        {
-            switch (party)
-            {
-                case 1: return new WirePaymentSystem(party);
-                default: return new WirePaymentSystem(party);
-            }
         }
     }
 }

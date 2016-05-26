@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CcaBank
+namespace CcaBank.Business
 {
-    class ChequingAccount : Account
+    public class ChequingAccount : Account
     {
         public int MonthlyFees { get; set; }
 

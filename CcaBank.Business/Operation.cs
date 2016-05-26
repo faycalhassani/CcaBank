@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace CcaBank
+namespace CcaBank.Business
 {
-    class Operation
+    public class Operation
     {
         public int Number { get; set; }
         public int AccountNumber { get; set; }
